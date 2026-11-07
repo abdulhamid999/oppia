@@ -38,6 +38,7 @@ import {ReleaseCoordinatorFactory} from '../user/release-coordinator';
 import {BlogAdmin, BlogAdminFactory} from '../user/blog-admin';
 import {BlogPostEditorFactory} from '../user/blog-post-editor';
 import {TopicManager, TopicManagerFactory} from '../user/topic-manager';
+import {ModeratorFactory} from '../user/moderator';
 
 const ROLES = testConstants.Roles;
 const cookieBannerAcceptButton =
@@ -53,6 +54,7 @@ const USER_ROLE_MAPPING = {
   [ROLES.BLOG_POST_EDITOR]: BlogPostEditorFactory,
   [ROLES.CURRICULUM_ADMIN]: CurriculumAdminFactory,
   [ROLES.RELEASE_COORDINATOR]: ReleaseCoordinatorFactory,
+  [ROLES.MODERATOR]: ModeratorFactory,
   [ROLES.TOPIC_MANAGER]: TopicManagerFactory,
   [ROLES.VOICEOVER_ADMIN]: VoiceoverAdminFactory,
 } as const;

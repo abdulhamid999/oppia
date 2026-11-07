@@ -230,6 +230,10 @@ export const INTERACTION_TABS_OF_INTERACTION_TYPE: Record<string, string> = {
   [INTERACTION_TYPES.FRACTION_INPUT]: INTERACTION_TABS.MATHS,
 } as const;
 
+const feedbackPopupSelector = '.e2e-test-exploration-feedback-popup-link';
+const feedbackTextarea = '.e2e-test-exploration-feedback-textarea';
+const stayAnonymousCheckbox = '.e2e-test-stay-anonymous-checkbox';
+
 const addTitleBar = 'input#explorationTitle';
 
 export class ExplorationEditor extends BaseUser {
@@ -1881,6 +1885,41 @@ export class ExplorationEditor extends BaseUser {
     }
 
     showMessage(`Title has been updated to ${newTitle}`);
+  }
+  /**
+   * Plays the exploration with the given ID.
+   * @param {string} explorationId - The ID of the exploration to play.
+   */
+  async playExploration(explorationId: string): Promise<void> {
+    await this.goto(`${baseUrl}/explore/${explorationId}`);
+  }
+
+  /**
+   * Gives feedback on the exploration.
+   * @param {string} feedback - The feedback to give on the exploration.
+   * @param {boolean} stayAnonymous - Whether to submit the feedback anonymously.
+   */
+  async giveFeedback(
+    feedback: string,
+    stayAnonymous: boolean = false
+  ): Promise<void> {
+    if (this.isViewportAtMobileWidth()) {
+      return;
+    }
+    await this.page.waitForSelector('nav-options', {state: 'visible'});
+    await this.clickOnElementWithSelector(feedbackPopupSelector);
+    await this.page.waitForSelector(feedbackTextarea, {state: 'visible'});
+    await this.typeInInputField(feedbackTextarea, feedback);
+
+    if (stayAnonymous) {
+      await this.clickOnElementWithSelector(stayAnonymousCheckbox);
+    }
+
+    await this.clickOnElementWithText('Submit');
+    await this.page.waitForSelector('.oppia-feedback-popup-container', {
+      state: 'attached',
+    });
+    showMessage('Feedback submitted successfully');
   }
 }
 
