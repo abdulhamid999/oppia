@@ -285,6 +285,32 @@ const mobileSidebarImpactReportButton =
 const mobileSidebarExpandImpactReportSubMenuButton =
   'div.e2e-mobile-test-sidebar-expand-impactreport-submenu';
 const footerBlogLink = 'a.e2e-test-footer-blog-link';
+const footerAboutLink = 'a.e2e-test-footer-about-link';
+const footerForumLink = 'a.e2e-test-footer-forum-link';
+const footerGetStartedLink = 'a.e2e-test-get-started-link';
+const footerTeachLink = 'a.e2e-test-teach-link';
+const footerCreatorGuidelinesLink = 'a.e2e-test-creator-guidelines-link';
+const footerTermsLink = 'a.e2e-test-terms-link';
+const footerPrivacyPolicyLink = 'a.e2e-test-privacy-policy-link';
+const footerCommunityLibraryLink = 'a.e2e-test-community-library-link';
+const footerContactUsLink = 'a.e2e-test-contact-link';
+const footerDonateLink = '.footer-donate-volunteer a[href="/donate"]';
+const footerVolunteerLink = '.footer-donate-volunteer a[href="/volunteer"]';
+
+const oppiaYouTubeLinkIcon = 'a.e2e-test-oppia-youtube-follow';
+const oppiaFacebookLinkIcon = 'a.e2e-test-oppia-facebook-follow';
+const oppiaTwitterLinkIcon = 'a.e2e-test-oppia-twitter-follow';
+const oppiaGithubLinkIcon = 'a.e2e-test-oppia-github-follow';
+const oppiaLinkedInLinkIcon = 'a.e2e-test-oppia-linkedin-follow';
+const oppiaAndroidAppButton = 'a.e2e-test-oppia-android-app';
+
+const googleGroupsOppiaUrl = testConstants.URLs.GoogleGroups.Oppia;
+const creatorGuidelinesUrl = testConstants.URLs.CreatorGuidelines;
+const contactUrl = testConstants.URLs.Contact;
+const getStartedUrl = testConstants.URLs.GetStarted;
+const termsUrl = testConstants.URLs.Terms;
+const privacyPolicyUrl = testConstants.URLs.PrivacyPolicy;
+const volunteerUrl = testConstants.URLs.Volunteer;
 
 // Donate page selectors and URLs.
 const donateUrl = testConstants.URLs.Donate;
@@ -3761,6 +3787,171 @@ export class LoggedOutUser extends BaseUser {
   async clickOnBlogLinkInFooter(): Promise<void> {
     await this.expectElementToBeVisible(footerBlogLink);
     await this.clickButtonToNavigateToNewPage(footerBlogLink, blogUrl);
+  }
+
+  /**
+   * Navigates to the Donate page using the Oppia website footer.
+   */
+  async clickOnDonateLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerDonateLink);
+    await this.clickAndWaitForNavigation(
+      footerDonateLink,
+      true,
+      60000,
+      'load'
+    );
+    await this.expectPageURLToContain(donateUrl);
+  }
+
+  /**
+   * Navigates to the Volunteer page using the Oppia website footer.
+   */
+  async clickOnVolunteerLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerVolunteerLink);
+    await this.clickButtonToNavigateToNewPage(footerVolunteerLink, volunteerUrl);
+  }
+
+  /**
+   * Navigates to the About page using the Oppia website footer.
+   */
+  async clickOnAboutLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerAboutLink);
+    await this.clickButtonToNavigateToNewPage(footerAboutLink, aboutUrl);
+  }
+
+  /**
+   * Navigates to the Forum page using the Oppia website footer.
+   */
+  async clickOnForumLinkInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(footerForumLink, googleGroupsOppiaUrl);
+  }
+
+  /**
+   * Navigates to the Get Started page using the Oppia website footer.
+   */
+  async clickOnGetStartedLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerGetStartedLink);
+    await this.clickButtonToNavigateToNewPage(
+      footerGetStartedLink,
+      getStartedUrl
+    );
+  }
+
+  /**
+   * Navigates to the Creator Guidelines page using the Oppia website footer.
+   */
+  async clickOnCreatorGuidelinesLinkinFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerCreatorGuidelinesLink);
+    await this.clickButtonToNavigateToNewPage(
+      footerCreatorGuidelinesLink,
+      creatorGuidelinesUrl
+    );
+  }
+
+  /**
+   * Navigates to the Teach page using the Oppia website footer.
+   */
+  async clickOnForParentsSlashTeachersLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerTeachLink);
+    await this.clickButtonToNavigateToNewPage(footerTeachLink, teachUrl);
+  }
+
+  /**
+   * Navigates to the Community Library page using the Oppia website footer.
+   */
+  async clickOnBrowseTheLibraryLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerCommunityLibraryLink);
+    await this.clickButtonToNavigateToNewPage(
+      footerCommunityLibraryLink,
+      communityLibraryUrl
+    );
+  }
+
+  /**
+   * Navigates to the Contact page using the Oppia website footer.
+   */
+  async clickOnContactUsLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerContactUsLink);
+    await this.clickButtonToNavigateToNewPage(footerContactUsLink, contactUrl);
+  }
+
+  /**
+   * Verifies the YouTube social icon in the footer points to the expected URL.
+   */
+  async clickYouTubeIconInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(
+      oppiaYouTubeLinkIcon,
+      `https://www.youtube.com/channel/${testConstants.OppiaSocials.YouTube.Id}`
+    );
+  }
+
+  /**
+   * Verifies the Facebook social icon in the footer points to the expected URL.
+   */
+  async clickFacebookIconInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(
+      oppiaFacebookLinkIcon,
+      `https://www.facebook.com/${testConstants.OppiaSocials.FaceBook.Id}`
+    );
+  }
+
+  /**
+   * Verifies the Twitter social icon in the footer points to the expected URL.
+   */
+  async clickTwitterIconInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(
+      oppiaTwitterLinkIcon,
+      `https://x.com/${testConstants.OppiaSocials.Twitter.Id}`
+    );
+  }
+
+  /**
+   * Verifies the GitHub social icon in the footer points to the expected URL.
+   */
+  async clickGithubIconInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(
+      oppiaGithubLinkIcon,
+      `https://github.com/${testConstants.OppiaSocials.Github.Id}`
+    );
+  }
+
+  /**
+   * Verifies the LinkedIn social icon in the footer points to the expected URL.
+   */
+  async clickLinkedInIconInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(
+      oppiaLinkedInLinkIcon,
+      `https://www.linkedin.com/company/${testConstants.OppiaSocials.LinkedIn.Id}`
+    );
+  }
+
+  /**
+   * Verifies the Google Play button in the footer points to the expected URL.
+   */
+  async clickGooglePlayButtonInFooter(): Promise<void> {
+    await this.expectLinkToHaveHref(
+      oppiaAndroidAppButton,
+      `https://play.google.com/store/apps/details?id=${testConstants.OppiaSocials.GooglePlay.Id}`
+    );
+  }
+
+  /**
+   * Navigates to the Terms page using the Oppia website footer.
+   */
+  async clickOnTermsOfServiceLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerTermsLink);
+    await this.clickButtonToNavigateToNewPage(footerTermsLink, termsUrl);
+  }
+
+  /**
+   * Navigates to the Privacy Policy page using the Oppia website footer.
+   */
+  async clickOnPrivacyPolicyLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerPrivacyPolicyLink);
+    await this.clickButtonToNavigateToNewPage(
+      footerPrivacyPolicyLink,
+      privacyPolicyUrl
+    );
   }
 
   /**
