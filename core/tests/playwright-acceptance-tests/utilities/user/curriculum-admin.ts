@@ -217,6 +217,13 @@ export class CurriculumAdmin extends TopicManager {
    * Function to navigate to exploration editor
    * @param {string | null} explorationId - ID of the exploration
    */
+  /**
+   * Navigates to the topics and skills dashboard page.
+   */
+  async navigateToTopicAndSkillsDashboardPage(): Promise<void> {
+    await this.goto(testConstants.URLs.TopicAndSkillsDashboard);
+  }
+
   async navigateToExplorationEditor(
     explorationId: string | null
   ): Promise<void> {

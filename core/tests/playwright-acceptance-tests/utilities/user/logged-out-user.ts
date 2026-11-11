@@ -164,6 +164,8 @@ const pauseVoiceoverButton = '.e2e-test-pause-circle';
 
 // Classroom Page.
 const classroomContentHeadingSelector = '.e2e-test-classroom-content-heading';
+const classroomNameHeading = '.e2e-test-classroom-name';
+const classroomTileContainer = '.oppia-classroom-tile-container';
 const diagnosticTestPlayerSelector = 'oppia-diagnostic-test-player';
 const diagnosticTestBoxSelector = '.e2e-test-diagnostic-test-box';
 const diagnosticTestHeadingSelector = `${diagnosticTestBoxSelector} h4`;
@@ -2229,6 +2231,45 @@ export class LoggedOutUser extends BaseUser {
     await this.waitForPageToFullyLoad();
     showMessage(
       `Navigated to classroom page: ${classroomsPageUrl}/${urlFragment}`
+    );
+  }
+
+  /**
+   * Function to navigate to the classrooms page.
+   * @param {boolean} verifyURL - Whether to verify that the final URL includes the classrooms page URL. Defaults to true.
+   */
+  async navigateToClassroomsPage(verifyURL: boolean = true): Promise<void> {
+    if (this.page.url() === classroomsPageUrl) {
+      await this.page.reload();
+    }
+    await this.goto(classroomsPageUrl, verifyURL);
+  }
+
+  /**
+   * This function verifies that the user is on the correct classroom page.
+   * @param {string} classroomName - The expected name of the classroom.
+   */
+  async expectToBeOnClassroomPage(classroomName: string): Promise<void> {
+    await this.expectElementToBeVisible(classroomNameHeading);
+    await expect(this.page.locator(classroomNameHeading)).toHaveText(
+      classroomName
+    );
+    showMessage(`The ${classroomName} classroom name is visible.`);
+  }
+
+  /**
+   * This function verifies that the classroom cards are present in the classrooms page.
+   * @param {number} classroomsCount - The expected number of classrooms.
+   */
+  async expectClassroomCountInClassroomsPageToBe(
+    classroomsCount: number
+  ): Promise<void> {
+    await this.expectElementToBeVisible(classroomTileContainer);
+    await expect(this.page.locator(classroomTileContainer)).toHaveCount(
+      classroomsCount
+    );
+    showMessage(
+      `${classroomsCount} classrooms are present in classrooms page.`
     );
   }
 
