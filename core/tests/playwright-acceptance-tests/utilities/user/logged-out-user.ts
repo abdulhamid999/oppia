@@ -286,6 +286,20 @@ const mobileSidebarExpandImpactReportSubMenuButton =
   'div.e2e-mobile-test-sidebar-expand-impactreport-submenu';
 const footerBlogLink = 'a.e2e-test-footer-blog-link';
 
+// SEO and crawler selectors and URLs.
+const robotsTxtUrl = `${baseUrl}/robots.txt`;
+const sitemapXmlUrl = `${baseUrl}/sitemap.xml`;
+const teachersUrl = `${baseUrl}/teachers`;
+const parentsUrl = `${baseUrl}/parents`;
+const partnershipsUrl = testConstants.URLs.Partnerships;
+const volunteerUrl = testConstants.URLs.Volunteer;
+const sitemapXmlLocTag = '<loc>';
+const metaOgTitleSelector = 'meta[property="og:title"]';
+const metaDescriptionSelector =
+  'meta[name="description"], meta[itemprop="description"]';
+const metaOgDescriptionSelector = 'meta[property="og:description"]';
+const metaApplicationNameSelector = 'meta[name="application-name"]';
+
 // Donate page selectors and URLs.
 const donateUrl = testConstants.URLs.Donate;
 const donatePageThanksModalURL = testConstants.URLs.DonatePageThanksModalURL;
@@ -4106,6 +4120,176 @@ export class LoggedOutUser extends BaseUser {
       (await this.page.locator(blogSuggestedForYouSectionSelector).count()) > 0
     ) {
       await this.expectElementToBeVisible(blogSuggestedForYouHeadingSelector);
+    }
+  }
+
+  /**
+   * Navigates to the robots.txt page.
+   */
+  async navigateToRobotsTxt(): Promise<void> {
+    await this.goto(robotsTxtUrl, false);
+  }
+
+  /**
+   * Navigates to the sitemap.xml page.
+   */
+  async navigateToSitemapXml(): Promise<void> {
+    await this.goto(sitemapXmlUrl, false);
+  }
+
+  /**
+   * Navigates to the splash page.
+   * @param {string} expectedURL - The expected URL after navigation. Defaults to `${baseUrl}/`.
+   */
+  async navigateToSplashPage(
+    expectedURL: string = `${baseUrl}/`
+  ): Promise<void> {
+    const navigationUtils = new NavigationUtils(this);
+    await navigationUtils.navigateToSplashPage(expectedURL);
+  }
+
+  /**
+   * Navigates to the Donate page.
+   */
+  async navigateToDonatePage(): Promise<void> {
+    await this.goto(donateUrl);
+  }
+
+  /**
+   * Navigates to the Volunteer page.
+   */
+  async navigateToVolunteerPage(): Promise<void> {
+    await this.goto(volunteerUrl);
+  }
+
+  /**
+   * Navigates to the Partnerships page.
+   */
+  async navigateToPartnershipsPage(): Promise<void> {
+    await this.goto(partnershipsUrl);
+  }
+
+  /**
+   * Navigates to the Teachers page.
+   */
+  async navigateToTeachersPage(): Promise<void> {
+    await this.goto(teachersUrl);
+  }
+
+  /**
+   * Navigates to the Parents page.
+   */
+  async navigateToParentsPage(): Promise<void> {
+    await this.goto(parentsUrl);
+  }
+
+  /**
+   * Verifies that sitemap.xml contains valid XML URL entries.
+   */
+  async verifySitemapXmlContent(): Promise<void> {
+    if (!(await this.isTextPresentOnPage(sitemapXmlLocTag))) {
+      throw new Error(
+        `Expected sitemap.xml to contain "${sitemapXmlLocTag}" URL entries, but none were found.`
+      );
+    }
+  }
+
+  /**
+   * Verifies that the current page URL returns HTTP 200 when fetched.
+   */
+  async verifyCurrentPageStatus200(): Promise<void> {
+    const url = this.page.url();
+    if (!url) {
+      throw new Error('Cannot verify status: current page URL is empty.');
+    }
+
+    const status: number | null = await this.page.evaluate(
+      async (u: string) => {
+        try {
+          const res = await fetch(u, {
+            method: 'GET',
+            credentials: 'same-origin',
+          });
+          return res.status;
+        } catch {
+          return null;
+        }
+      },
+      url
+    );
+
+    if (status !== 200) {
+      throw new Error(`Expected ${url} to return HTTP 200 but got ${status}`);
+    }
+  }
+
+  /**
+   * Function to verify SEO metadata on the current page.
+   */
+  async verifySEOMetadata(
+    expected: {
+      title?: string;
+      ogTitle?: string;
+      description?: string;
+      ogDescription?: string;
+      applicationName?: string;
+    } = {}
+  ): Promise<void> {
+    await this.page.waitForSelector('head title', {state: 'attached'});
+    await this.page.waitForSelector(metaOgTitleSelector, {state: 'attached'});
+
+    if (expected.title !== undefined) {
+      const title = (await this.page.title()).trim();
+      if (title !== expected.title) {
+        throw new Error(
+          `<title> mismatch. Expected: "${expected.title}", Found: "${title}"`
+        );
+      }
+    }
+
+    if (expected.ogTitle !== undefined) {
+      const ogTitle = await this.page.$eval(metaOgTitleSelector, el =>
+        el.getAttribute('content')
+      );
+      if (ogTitle !== expected.ogTitle) {
+        throw new Error(
+          `meta property='og:title' mismatch. Expected: "${expected.ogTitle}", Found: "${ogTitle}"`
+        );
+      }
+    }
+
+    if (expected.description !== undefined) {
+      const description = await this.page.$eval(metaDescriptionSelector, el =>
+        el.getAttribute('content')
+      );
+      if (description !== expected.description) {
+        throw new Error(
+          `meta description mismatch (name/itemprop). Expected: "${expected.description}", Found: "${description}"`
+        );
+      }
+    }
+
+    if (expected.ogDescription !== undefined) {
+      const ogDescription = await this.page.$eval(
+        metaOgDescriptionSelector,
+        el => el.getAttribute('content')
+      );
+      if (ogDescription !== expected.ogDescription) {
+        throw new Error(
+          `meta property='og:description' mismatch. Expected: "${expected.ogDescription}", Found: "${ogDescription}"`
+        );
+      }
+    }
+
+    if (expected.applicationName !== undefined) {
+      const appName = await this.page.$eval(metaApplicationNameSelector, el =>
+        el.getAttribute('content')
+      );
+      if (appName !== expected.applicationName) {
+        throw new Error(
+          `meta name='application-name' mismatch. Expected: "${expected.applicationName}", Found: "${appName}"`
+        );
+      }
     }
   }
 }

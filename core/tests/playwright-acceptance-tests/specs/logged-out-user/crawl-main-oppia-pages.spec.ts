@@ -18,8 +18,9 @@
  * SE.1. Crawl the main marketing and transactional pages
  */
 
-import {UserFactory} from '../../utilities/common/user-factory';
+import {test} from '@playwright/test';
 import testConstants from '../../utilities/common/test-constants';
+import {UserFactory} from '../../utilities/common/user-factory';
 import {LoggedOutUser} from '../../utilities/user/logged-out-user';
 
 const DEFAULT_SPEC_TIMEOUT_MSECS = testConstants.DEFAULT_SPEC_TIMEOUT_MSECS;
@@ -68,40 +69,17 @@ const PARTNERSHIPS_SEO = {
   applicationName: 'Oppia.org',
 };
 
-// TODO(#26383): Re-enable distinct metadata checks for /teachers and
-// /parents after these routes are separated into dedicated page modules
-// instead of sharing the volunteer/stewards page implementation.
+test.describe.configure({mode: 'serial'});
 
-// Expected SEO metadata values for teachers page.
-// const TEACHERS_SEO = {
-//   title: 'Free Math Teaching Resources & Tools | Oppia',
-//   ogTitle: 'Free Math Teaching Resources & Tools | Oppia',
-//   description:
-//     'Equip your classroom or home with adaptive math stories, downloadable lesson plan guides, and automated student tracking dashboards.',
-//   ogDescription:
-//     'Equip your classroom or home with adaptive math stories, downloadable lesson plan guides, and automated student tracking dashboards.',
-//   applicationName: 'Oppia.org',
-// };
-
-// Expected SEO metadata values for parents page.
-// const PARENTS_SEO = {
-//   title: 'Free At-Home Math Learning for Kids | Oppia',
-//   ogTitle: 'Free At-Home Math Learning for Kids | Oppia',
-//   description:
-//     'Help your child master math with fun, story-based lessons. Safe, completely free, and designed for independent learning at home.',
-//   ogDescription:
-//     'Help your child master math with fun, story-based lessons. Safe, completely free, and designed for independent learning at home.',
-//   applicationName: 'Oppia.org',
-// };
-
-describe('Search Engine Bot', function () {
+test.describe('Search Engine Bot', function () {
   let loggedOutUser: LoggedOutUser;
 
-  beforeAll(async function () {
-    loggedOutUser = await UserFactory.createLoggedOutUser();
-  }, DEFAULT_SPEC_TIMEOUT_MSECS);
+  test.beforeAll(async function ({browser}) {
+    test.setTimeout(DEFAULT_SPEC_TIMEOUT_MSECS);
+    loggedOutUser = await UserFactory.createLoggedOutUser(browser);
+  });
 
-  it(
+  test(
     'should discover the site map architecture, respect crawling restrictions,' +
       ' and extract unique, high-fidelity metadata from core public pages',
     async function () {
@@ -137,23 +115,14 @@ describe('Search Engine Bot', function () {
       // Issue an HTTP GET request to oppia.org/teachers.
       await loggedOutUser.navigateToTeachersPage();
       await loggedOutUser.verifyCurrentPageStatus200();
-      // TODO(#26383): Re-enable distinct metadata checks for /teachers and
-      // /parents after these routes are separated into dedicated page modules
-      // instead of sharing the volunteer/stewards page implementation.
-      // await loggedOutUser.verifySEOMetadata(TEACHERS_SEO);
 
       // Issue an HTTP GET request to oppia.org/parents.
       await loggedOutUser.navigateToParentsPage();
       await loggedOutUser.verifyCurrentPageStatus200();
-      // TODO(#26383): Re-enable distinct metadata checks for /teachers and
-      // /parents after these routes are separated into dedicated page modules
-      // instead of sharing the volunteer/stewards page implementation.
-      // await loggedOutUser.verifySEOMetadata(PARENTS_SEO);
-    },
-    DEFAULT_SPEC_TIMEOUT_MSECS
+    }
   );
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await UserFactory.closeAllBrowsers();
   });
 });
