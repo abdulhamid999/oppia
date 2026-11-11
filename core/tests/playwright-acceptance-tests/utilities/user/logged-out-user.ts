@@ -30,6 +30,7 @@ const baseUrl = testConstants.URLs.BaseURL;
 const classroomsPageUrl = testConstants.URLs.ClassroomsPage;
 const communityLibraryUrl = testConstants.URLs.CommunityLibrary;
 const homeUrl = testConstants.URLs.Home;
+const getStartedPageHeading = '.e2e-test-get-started-page';
 
 const LABEL_FOR_SUBMIT_BUTTON = 'Submit and start contributing';
 const signUpUsernameInputField = 'input.e2e-test-username-input';
@@ -4107,6 +4108,110 @@ export class LoggedOutUser extends BaseUser {
     ) {
       await this.expectElementToBeVisible(blogSuggestedForYouHeadingSelector);
     }
+  }
+
+  /**
+   * Navigates to the Get Started page.
+   */
+  async navigateToGetStartedPage(): Promise<void> {
+    await this.goto(testConstants.URLs.GetStarted);
+    await this.expectElementToBeVisible(getStartedPageHeading);
+    showMessage('Navigated to the Get Started page.');
+  }
+
+  /**
+   * Checks that the link with the text "create one here" on the Get Started page has the right href.
+   */
+  async clickCreateOneHereLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {hasText: 'create one here'});
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+      'href',
+      'https://accounts.google.com/SignUp'
+    );
+    showMessage('The "create one here" link has the right link.');
+  }
+
+  /**
+   * Checks that the link with the text "Welcome to Oppia" on the Get Started page has the right href.
+   */
+  async clickWelcomeToOppiaLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {hasText: 'Welcome to Oppia'});
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+      'href',
+      testConstants.URLs.WelcomeToOppia
+    );
+    showMessage('The "Welcome to Oppia" link has the right link.');
+  }
+
+  /**
+   * Checks that the link with the text "Get Electrified!" on the Get Started page has the right href.
+   */
+  async clickGetElectrifiedLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {hasText: 'Get Electrified!'});
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+      'href',
+      testConstants.URLs.Electromagnetism
+    );
+    showMessage('The "Get Electrified!" link has the right link.');
+  }
+
+  /**
+   * Checks that the link with the text "Programming with Carla" on the Get Started page has the right href.
+   */
+  async clickProgrammingWithCarlaLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {hasText: 'Programming with Carla'});
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+      'href',
+      testConstants.URLs.ProgrammingWithCarla
+    );
+    showMessage('The "Programming with Carla" link has the right link.');
+  }
+
+  /**
+   * Checks that the link with the text "in our user documentation" on the Get Started page has the right href.
+   */
+  async clickInOurUserDocumentationLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {hasText: 'in our user documentation'});
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+      'href',
+      testConstants.URLs.CreatingAnExploration
+    );
+    showMessage('The "in our user documentation" link has the right link.');
+  }
+
+  /**
+   * Checks that the link with the text "embed it in your own web page" on the Get Started page has the right href.
+   */
+  async clickEmbedItInYourOwnWebPageLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {
+      hasText: 'embed it in your own web page',
+    });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute(
+      'href',
+      testConstants.URLs.EmbeddingAnExploration
+    );
+    showMessage('The "embed it in your own web page" link has the right link.');
+  }
+
+  /**
+   * Clicks the link with the text "discover more ways to get involved" on the Get Started page.
+   */
+  async clickDiscoverMoreWaysToGetInvolvedLinkOnGetStartedPage(): Promise<void> {
+    const link = this.page.locator('a', {
+      hasText: 'discover more ways to get involved',
+    });
+    await expect(link).toBeVisible();
+    await link.click();
+    await expect(this.page).toHaveURL(testConstants.URLs.Contact);
+    showMessage(
+      'The "discover more ways to get involved" link opens the contact page.'
+    );
   }
 }
 
