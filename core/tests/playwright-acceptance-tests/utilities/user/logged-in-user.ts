@@ -2004,6 +2004,14 @@ export class LoggedInUser extends BaseUser {
   }
 
   /**
+   * Navigates to the exploration page and starts playing the exploration.
+   * @param {string | null} explorationId - The ID of the exploration to play.
+   */
+  async playExploration(explorationId: string | null): Promise<void> {
+    await this.playExplorationAsLoggedInUser(explorationId);
+  }
+
+  /**
    * Function to play a specific lesson from the community library tab in learner dashboard.
    * @param {string} lessonName - The name of the lesson to be played.
    */

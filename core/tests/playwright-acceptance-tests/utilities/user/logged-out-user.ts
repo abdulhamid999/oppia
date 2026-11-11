@@ -29,6 +29,8 @@ const blogUrl = testConstants.URLs.Blog;
 const baseUrl = testConstants.URLs.BaseURL;
 const classroomsPageUrl = testConstants.URLs.ClassroomsPage;
 const communityLibraryUrl = testConstants.URLs.CommunityLibrary;
+const recentlyPublishedExplorationsPageUrl =
+  testConstants.URLs.recentlyPublishedExplorations;
 const homeUrl = testConstants.URLs.Home;
 
 const LABEL_FOR_SUBMIT_BUTTON = 'Submit and start contributing';
@@ -2269,6 +2271,41 @@ export class LoggedOutUser extends BaseUser {
     verifyURL: boolean = true
   ): Promise<void> {
     await this.goto(communityLibraryUrl, verifyURL);
+  }
+
+  /**
+   * Navigates to the Top-Rated Explorations page.
+   */
+  async navigateToTopRatedLessonsPage(): Promise<void> {
+    await this.navigateToCommunityLibraryPage();
+    await this.clickAndWaitForNavigation('Top-Rated Explorations');
+  }
+
+  /**
+   * Checks if the explorations are displayed in a specific order.
+   * @param {string[]} expectedOrder - The expected order of the explorations.
+   */
+  async expectLessonsInOrder(expectedOrder: string[]): Promise<void> {
+    await this.page.waitForSelector(explorationTitleSelector);
+    const explorationTitles = await this.page.$$(explorationTitleSelector);
+    for (let i = 0; i < explorationTitles.length; i++) {
+      const titleText = await this.page.evaluate(
+        el => el.querySelector('span > span')?.textContent?.trim() || '',
+        explorationTitles[i]
+      );
+      if (titleText !== expectedOrder[i]) {
+        throw new Error(
+          `Exploration at position ${i} is "${titleText}", but expected "${expectedOrder[i]}".`
+        );
+      }
+    }
+  }
+
+  /**
+   * Navigates to the recently published explorations page.
+   */
+  async navigateToRecentlyPublishedLessonsPage(): Promise<void> {
+    await this.goto(recentlyPublishedExplorationsPageUrl);
   }
 
   /**

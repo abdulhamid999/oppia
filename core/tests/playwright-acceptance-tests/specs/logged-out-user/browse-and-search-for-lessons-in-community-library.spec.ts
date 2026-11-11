@@ -1,4 +1,4 @@
-// Copyright 2024 The Oppia Authors. All Rights Reserved.
+// Copyright 2026 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,27 +16,32 @@
  * @fileoverview Acceptance tests for the community library page interactions.
  */
 
-import {UserFactory} from '../../utilities/common/user-factory';
+import {test} from '@playwright/test';
 import testConstants from '../../utilities/common/test-constants';
+import {UserFactory} from '../../utilities/common/user-factory';
 import {LoggedOutUser} from '../../utilities/user/logged-out-user';
 import {ExplorationEditor} from '../../utilities/user/exploration-editor';
 import {LoggedInUser} from '../../utilities/user/logged-in-user';
 
 const DEFAULT_SPEC_TIMEOUT_MSECS = testConstants.DEFAULT_SPEC_TIMEOUT_MSECS;
 
-describe('Logged-out User', function () {
+test.describe.configure({mode: 'serial'});
+
+test.describe('Logged-out User', function () {
   let explorationEditor: ExplorationEditor & LoggedInUser;
   let loggedOutUser: LoggedOutUser;
   let explorationId1: string | null;
   let explorationId2: string | null;
 
-  beforeAll(async function () {
+  test.beforeAll(async function ({browser}) {
+    test.setTimeout(DEFAULT_SPEC_TIMEOUT_MSECS);
     explorationEditor = await UserFactory.createNewUser(
       'explorationEditor',
-      'exploration_editor@example.com'
+      'exploration_editor@example.com',
+      browser
     );
 
-    loggedOutUser = await UserFactory.createLoggedOutUser();
+    loggedOutUser = await UserFactory.createLoggedOutUser(browser);
 
     explorationId1 =
       await explorationEditor.createAndPublishAMinimalExplorationWithTitle(
@@ -62,9 +67,9 @@ describe('Logged-out User', function () {
       'Excellent advanced Algebra course',
       false
     );
-  }, DEFAULT_SPEC_TIMEOUT_MSECS);
+  });
 
-  it(
+  test(
     'should be able to browse for lessons and see the rating of lessons in the community library',
     async function () {
       await loggedOutUser.navigateToCommunityLibraryPage();
@@ -79,11 +84,11 @@ describe('Logged-out User', function () {
 
       // View the ratings on an exploration once a minimum number of ratings have been submitted.
       await loggedOutUser.expectLessonsToHaveRating(5, 'Algebra I');
-    },
-    DEFAULT_SPEC_TIMEOUT_MSECS
+    }
   );
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await UserFactory.closeAllBrowsers();
   });
 });
+
