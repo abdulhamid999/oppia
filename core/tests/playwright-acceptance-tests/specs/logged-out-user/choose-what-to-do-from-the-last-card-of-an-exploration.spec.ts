@@ -59,7 +59,8 @@ test.describe('Logged-out User', function () {
     await curriculumAdmin.createAndPublishTopic(
       'Arithmetic',
       'Addition',
-      'Multiplication'
+      'Multiplication',
+      true
     );
 
     await curriculumAdmin.createAndPublishClassroom(
