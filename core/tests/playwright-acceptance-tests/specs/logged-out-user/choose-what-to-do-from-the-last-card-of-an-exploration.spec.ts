@@ -1,4 +1,4 @@
-// Copyright 2024 The Oppia Authors. All Rights Reserved.
+// Copyright 2026 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
  * - Loading the next chapter, loading the practice session page, and returning to the story from the last state of an exploration.
  */
 
+import {test} from '@playwright/test';
 import {UserFactory} from '../../utilities/common/user-factory';
 import testConstants from '../../utilities/common/test-constants';
 import {LoggedOutUser} from '../../utilities/user/logged-out-user';
@@ -29,16 +30,18 @@ import {CurriculumAdmin} from '../../utilities/user/curriculum-admin';
 const DEFAULT_SPEC_TIMEOUT_MSECS = testConstants.DEFAULT_SPEC_TIMEOUT_MSECS;
 const ROLES = testConstants.Roles;
 
-describe('Logged-out User', function () {
+test.describe('Logged-out User', function () {
   let curriculumAdmin: CurriculumAdmin & ExplorationEditor;
   let loggedOutUser: LoggedOutUser;
   let explorationId1: string | null;
   let explorationId2: string | null;
 
-  beforeAll(async function () {
+  test.beforeAll(async function ({browser}) {
+    test.setTimeout(400000);
     curriculumAdmin = await UserFactory.createNewUser(
       'curriculumAdm',
       'curriculumAdmin@example.com',
+      browser,
       [ROLES.CURRICULUM_ADMIN]
     );
 
@@ -81,39 +84,35 @@ describe('Logged-out User', function () {
     await curriculumAdmin.saveStoryDraft();
     await curriculumAdmin.publishStoryDraft();
 
-    loggedOutUser = await UserFactory.createLoggedOutUser();
-    // Setup taking longer than the default 300000 ms.
-  }, 400000);
+    loggedOutUser = await UserFactory.createLoggedOutUser(browser);
+  });
 
-  it(
-    'should be able to return to the respective story, sign-in, sign-up and load the next chapter form the last state of an exploration',
-    async function () {
-      await loggedOutUser.navigateToClassroomPage('math');
+  test('should be able to return to the respective story, sign-in, sign-up and load the next chapter form the last state of an exploration', async function () {
+    test.setTimeout(DEFAULT_SPEC_TIMEOUT_MSECS);
+    await loggedOutUser.navigateToClassroomPage('math');
 
-      await loggedOutUser.selectAndOpenTopic('Arithmetic');
-      await loggedOutUser.selectChapterWithinStoryToLearn(
-        'Algebra Story 1',
-        'Algebra Chapter 1'
-      );
+    await loggedOutUser.selectAndOpenTopic('Arithmetic');
+    await loggedOutUser.selectChapterWithinStoryToLearn(
+      'Algebra Story 1',
+      'Algebra Chapter 1'
+    );
 
-      // Since the exploration has only one state, the learner should see the last state of the exploration immediately after selecting the chapter.
-      await loggedOutUser.expectExplorationCompletionToastMessage(
-        'Congratulations for completing this lesson!'
-      );
+    // Since the exploration has only one state, the learner should see the last state of the exploration immediately after selecting the chapter.
+    await loggedOutUser.expectExplorationCompletionToastMessage(
+      'Congratulations for completing this lesson!'
+    );
 
-      await loggedOutUser.expectSignUpButtonToBePresent();
-      await loggedOutUser.expectSignInButtonToBePresent();
+    await loggedOutUser.expectSignUpButtonToBePresent();
+    await loggedOutUser.expectSignInButtonToBePresent();
 
-      await loggedOutUser.returnToStoryFromLastState();
+    await loggedOutUser.returnToStoryFromLastState();
 
-      // Navigating back to the lesson's last state so to use the other options present onto that.
-      await loggedOutUser.selectAndPlayChapter('Algebra Chapter 1');
-      await loggedOutUser.loadNextChapterFromLastState();
-    },
-    DEFAULT_SPEC_TIMEOUT_MSECS
-  );
+    // Navigating back to the lesson's last state so to use the other options present onto that.
+    await loggedOutUser.selectAndPlayChapter('Algebra Chapter 1');
+    await loggedOutUser.loadNextChapterFromLastState();
+  });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await UserFactory.closeAllBrowsers();
   });
 });

@@ -94,6 +94,8 @@ const nextCardButton = '.e2e-test-next-card-button';
 const nextCardArrowButton = '.e2e-test-next-button';
 
 const explorationCompletionToastMessage = '.e2e-test-lesson-completion-message';
+const nextLessonButton = '.e2e-test-next-lesson-button';
+const signUpButton = '.e2e-test-login-button';
 
 const stateConversationContent = '.e2e-test-conversation-content';
 
@@ -4107,6 +4109,41 @@ export class LoggedOutUser extends BaseUser {
     ) {
       await this.expectElementToBeVisible(blogSuggestedForYouHeadingSelector);
     }
+  }
+
+  /**
+   * Selects and plays a chapter from a story page.
+   * @param {string} chapterName - The name of the chapter to play.
+   */
+  async selectAndPlayChapter(chapterName: string): Promise<void> {
+    await this.playChapterFromStory(chapterName);
+  }
+
+  /**
+   * Checks if the sign-up button is present on the page.
+   */
+  async expectSignUpButtonToBePresent(): Promise<void> {
+    await this.waitForStaticAssetsToLoad();
+    await this.expectElementToBeVisible(signUpButton);
+    showMessage('Sign-up button present.');
+  }
+
+  /**
+   * Loads the next chapter from the exploration completion state.
+   */
+  async loadNextChapterFromLastState(): Promise<void> {
+    if (this.isViewportAtMobileWidth()) {
+      return;
+    }
+    await this.page.waitForSelector(explorationCompletionToastMessage, {
+      state: 'hidden',
+    });
+
+    await this.clickAndWaitForNavigation(nextLessonButton, true);
+
+    await this.page.waitForSelector(nextLessonButton, {
+      state: 'hidden',
+    });
   }
 }
 

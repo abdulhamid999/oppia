@@ -292,8 +292,8 @@
     },
     {
       "name": "logged-out-user/choose-what-to-do-from-the-last-card-of-an-exploration",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/choose-what-to-do-from-the-last-card-of-an-exploration.spec.ts",
-      "framework": "puppeteer"
+      "module": "core/tests/playwright-acceptance-tests/specs/logged-out-user/choose-what-to-do-from-the-last-card-of-an-exploration.spec.ts",
+      "framework": "playwright"
     },
     {
       "name": "logged-out-user/change-site-language-and-engage-with-original-exploration",
