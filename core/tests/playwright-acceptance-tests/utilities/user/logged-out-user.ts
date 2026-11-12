@@ -486,15 +486,23 @@ export class LoggedOutUser extends BaseUser {
     if (!languageDropdownElement) {
       throw new Error('Language dropdown element not found');
     }
-    const initialLanguage = await this.page.$eval(
-      languageDropdown,
-      el => el.textContent
-    );
+    const initialLanguage =
+      (await this.page.$eval(languageDropdown, el => el.textContent))?.trim() ??
+      '';
     await this.clickOnElement(languageDropdownElement);
-    // Capture the navigation the language click triggers before reloading.
-    await this.clickAndWaitForNavigation(languageOption, true);
-    // Here we need to reload the page again to confirm the language change.
-    await this.reloadPage();
+
+    // If direction changes (e.g. between RTL and LTR), Oppia automatically reloads the page.
+    // If direction does not change, clicking the language option updates the language in-place.
+    const isDirectionChange =
+      (initialLanguage.includes('العربية') && langCode !== 'ar') ||
+      (!initialLanguage.includes('العربية') && langCode === 'ar');
+
+    if (isDirectionChange) {
+      await this.clickAndWaitForNavigation(languageOption, true);
+    } else {
+      await this.clickOnElementWithSelector(languageOption);
+      await this.reloadPage();
+    }
 
     await this.page.waitForFunction(
       ({selector, textContent}: {selector: string; textContent: string}) => {
