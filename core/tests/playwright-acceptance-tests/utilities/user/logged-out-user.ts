@@ -200,6 +200,10 @@ const browseLessonButtonSelector =
   '.e2e-test-splash-page .e2e-test-explore-lessons-btn';
 
 // Topic page.
+const oppiaTopicTitleSelector = '.oppia-topic-title';
+const navbarBackButtonSelector = '.oppia-navbar-back-button';
+const topicDescriptionSelector = '.e2e-test-topic-description';
+const reviewCardTitleSelector = '.oppia-subtopic-title';
 const lessonsTabButtonSelector = '.e2e-test-lesson-tab-link';
 const lessonsTabContainerSelector = '.e2e-test-lessons-tab-container';
 const practiceTabButtonSelector = '.e2e-test-practice-tab-link';
@@ -4107,6 +4111,49 @@ export class LoggedOutUser extends BaseUser {
     ) {
       await this.expectElementToBeVisible(blogSuggestedForYouHeadingSelector);
     }
+  }
+
+  /**
+   * Returns to the topic page after completing an exploration.
+   */
+  async returnToTopicPageAfterCompletingExploration(): Promise<void> {
+    if (this.isViewportAtMobileWidth()) {
+      await this.returnToStoryFromLastState();
+      await this.expectElementToBeVisible(navbarBackButtonSelector);
+      await this.clickAndWaitForNavigation(navbarBackButtonSelector, true);
+    } else {
+      await this.expectElementToBeVisible(oppiaTopicTitleSelector);
+      await this.clickAndWaitForNavigation(oppiaTopicTitleSelector, true);
+    }
+
+    await this.expectElementToBeVisible(topicDescriptionSelector);
+    await this.expectElementToBeVisible(topicViewerContainerSelector);
+    showMessage('Returned to topic page after completing exploration.');
+  }
+
+  /**
+   * Navigates to the study tab in the topic page.
+   */
+  async navigateToStudyTab(): Promise<void> {
+    await this.navigateToRevisionTabInTopic();
+  }
+
+  /**
+   * Checks that the review card has the expected title and description content.
+   * @param {string} reviewCardTitle - The expected title of the review card.
+   * @param {string} reviewCardDescription - The expected description text.
+   */
+  async expectReviewCardToHaveContent(
+    reviewCardTitle: string,
+    reviewCardDescription: string
+  ): Promise<void> {
+    await this.expectElementToBeVisible(reviewCardTitleSelector);
+    await this.expectTextContentToBe(reviewCardTitleSelector, reviewCardTitle);
+    await this.expectTextContentToContain(
+      newSubtopicViewerContainerSelector,
+      reviewCardDescription
+    );
+    showMessage(`Review card for ${reviewCardTitle} has expected content.`);
   }
 }
 

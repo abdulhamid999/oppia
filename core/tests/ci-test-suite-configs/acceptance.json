@@ -747,8 +747,8 @@
     },
     {
       "name": "logged-out-user/select-and-play-topic-from-classroom-page",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/select-and-play-topic-from-classroom-page.spec.ts",
-      "framework": "puppeteer"
+      "module": "core/tests/playwright-acceptance-tests/specs/logged-out-user/select-and-play-topic-from-classroom-page.spec.ts",
+      "framework": "playwright"
     },
     {
       "name": "exploration-editor/delete-lesson-creators-user-profile",
