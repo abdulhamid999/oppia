@@ -1412,7 +1412,10 @@ export class LoggedOutUser extends BaseUser {
     expectedRating: number,
     expectedExplorationName: string
   ): Promise<void> {
-    const cardSelector = this.isViewportAtMobileWidth()
+    const isMobileCardPresent =
+      this.isViewportAtMobileWidth() &&
+      (await this.page.locator(mobileLessonCardSelector).count()) > 0;
+    const cardSelector = isMobileCardPresent
       ? mobileLessonCardSelector
       : lessonCardSelector;
     const cardTitleSelector = this.isViewportAtMobileWidth()
@@ -1430,8 +1433,8 @@ export class LoggedOutUser extends BaseUser {
         const titleText = await this.getTextContent(titleElement);
         if (titleText === expectedExplorationName) {
           // The mobile activity summary card does not render a rating, so the
-          // rating can only be checked on the desktop card.
-          if (!this.isViewportAtMobileWidth()) {
+          // rating can only be checked on the card when not using mobile activity card.
+          if (!isMobileCardPresent) {
             await this.expectElementToBeVisible(explorationRatingSelector);
             const ratingElement = await card.$(explorationRatingSelector);
             if (ratingElement) {
@@ -1477,13 +1480,16 @@ export class LoggedOutUser extends BaseUser {
     expectedViews: number,
     explorationName: string
   ): Promise<void> {
-    const cardSelector = this.isViewportAtMobileWidth()
+    const isMobileCardPresent =
+      this.isViewportAtMobileWidth() &&
+      (await this.page.locator(mobileLessonCardSelector).count()) > 0;
+    const cardSelector = isMobileCardPresent
       ? mobileLessonCardSelector
       : lessonCardSelector;
     const cardTitleSelector = this.isViewportAtMobileWidth()
       ? explorationTitleSelector
       : lessonCardTitleSelector;
-    const viewsSelector = this.isViewportAtMobileWidth()
+    const viewsSelector = isMobileCardPresent
       ? mobileExplorationViewsSelector
       : explorationViewsSelector;
     await this.expectElementToBeVisible(cardSelector);
