@@ -219,6 +219,7 @@ const revisionTabButtonSelector = '.e2e-test-study-tab-link';
 const revisionTabSelector = 'subtopics-list';
 const mathClassroomUrl = testConstants.URLs.MathClassroom;
 const subtopicTitleInStudyTabSelector = '.subtopic-title';
+const subtopicViewerContainerSelector = '.oppia-subtopic-viewer-container';
 const newSubtopicViewerContainerSelector = '.new-subtopic-viewer-container';
 const studyGuideTitleSelector = `${newSubtopicViewerContainerSelector} .content-title`;
 const studyGuideSectionSelector = `${newSubtopicViewerContainerSelector} .card`;
@@ -2359,7 +2360,7 @@ export class LoggedOutUser extends BaseUser {
     }
 
     await this.clickOnElement(subtopicCards[cardIndex]);
-    await this.expectElementToBeVisible(newSubtopicViewerContainerSelector);
+    await this.expectElementToBeVisible(subtopicViewerContainerSelector);
     await this.expectElementToBeVisible(subtopicTitleInStudyTabSelector, false);
     showMessage(`Opened the study guide for ${subtopicName}.`);
   }
@@ -4150,7 +4151,7 @@ export class LoggedOutUser extends BaseUser {
     await this.expectElementToBeVisible(reviewCardTitleSelector);
     await this.expectTextContentToBe(reviewCardTitleSelector, reviewCardTitle);
     await this.expectTextContentToContain(
-      newSubtopicViewerContainerSelector,
+      subtopicViewerContainerSelector,
       reviewCardDescription
     );
     showMessage(`Review card for ${reviewCardTitle} has expected content.`);
