@@ -347,6 +347,25 @@ const lessonCreationAccordionCloseButtonInTeachPage =
   '.e2e-test-teach-page-lesson-panel button';
 const lessonCreationAccordionPanelContentInTeachPage =
   '.e2e-test-teach-page-lesson-panel .panel-content';
+const androidUrl = testConstants.URLs.Android;
+const exploreLessonsButtonAtTheTopInTeachPage =
+  '.e2e-test-teach-page-explore-lessons-button-at-the-top';
+const exploreLessonsButtonAtTheBottomInTeachPage =
+  '.e2e-test-teach-page-explore-lessons-button-at-the-bottom';
+const getAndroidAppButtonInTeachPage =
+  '.e2e-test-teach-page-download-android-app-button';
+const testimonialCarouselNamesInTeachPage =
+  testConstants.TeachPageTestimonialsNames;
+const testimonialCarouselSelectorInTeachPage =
+  '.e2e-test-teach-page-testimonial-carousel';
+const testimonialCarouselPrevButton =
+  '.e2e-test-teach-page-testimonial-carousel-prev-btn';
+const testimonialCarouselNextButton =
+  '.e2e-test-teach-page-testimonial-carousel-next-btn';
+const testimonialCarouselNameInTeachPage =
+  '.carousel-item.active .e2e-test-teach-page-testimonial-name';
+const testimonialCarouselIndicatorsInTeachPage = '.carousel-indicators li';
+const footerTeachLink = 'a.e2e-test-teach-link';
 
 // Newsletter selectors and URLs.
 const newsletterEmailInputField = '.e2e-test-newsletter-input';
@@ -3377,6 +3396,111 @@ export class LoggedOutUser extends BaseUser {
       false
     );
     showMessage('Lesson Creation accordion close button is working correctly');
+  }
+
+  /**
+   * Navigates to the Teach page using the Oppia website footer.
+   */
+  async clickOnForParentsSlashTeachersLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerTeachLink);
+    await this.clickOnElementWithSelector(footerTeachLink);
+    await this.waitForPageToFullyLoad();
+    await expect(this.page).toHaveURL(teachUrl);
+  }
+
+  /**
+   * Navigates directly to the Teach page.
+   */
+  async navigateToTeachPage(): Promise<void> {
+    await this.goto(teachUrl);
+  }
+
+  /**
+   * Clicks the Explore Lessons button at the top of the Teach page.
+   * This button is only visible in mobile view.
+   */
+  async clickExploreLessonsButtonAtTheTopInTeachPage(): Promise<void> {
+    if (this.isViewportAtMobileWidth()) {
+      await this.expectElementToBeVisible(
+        exploreLessonsButtonAtTheTopInTeachPage
+      );
+      await this.clickOnElementWithSelector(
+        exploreLessonsButtonAtTheTopInTeachPage
+      );
+      await this.waitForPageToFullyLoad();
+      await expect(this.page).toHaveURL(classroomsPageUrl);
+    }
+  }
+
+  /**
+   * Clicks the Explore Lessons button at the bottom of the Teach page
+   * and verifies navigation to the classrooms page.
+   */
+  async clickExploreLessonsButtonAtTheBottomInTeachPage(): Promise<void> {
+    await this.expectElementToBeVisible(
+      exploreLessonsButtonAtTheBottomInTeachPage
+    );
+    await this.clickOnElementWithSelector(
+      exploreLessonsButtonAtTheBottomInTeachPage
+    );
+    await this.waitForPageToFullyLoad();
+    await expect(this.page).toHaveURL(classroomsPageUrl);
+  }
+
+  /**
+   * Clicks the Get Android App button in the Teach page and verifies
+   * navigation to the Android page.
+   */
+  async clickGetAndroidAppButtonInTeachPage(): Promise<void> {
+    await this.expectElementToBeVisible(getAndroidAppButtonInTeachPage);
+    await this.clickOnElementWithSelector(getAndroidAppButtonInTeachPage);
+    await this.waitForPageToFullyLoad();
+    await expect(this.page).toHaveURL(androidUrl);
+  }
+
+  /**
+   * Verifies the testimonials carousel in the Teach page: the first
+   * testimonial is shown, cycling to next shows the second testimonial,
+   * and cycling back returns to the first testimonial.
+   */
+  async expectTestimonailsCarouselToBeFunctionalInTeachPage(): Promise<void> {
+    await this.expectElementToBeVisible(testimonialCarouselSelectorInTeachPage);
+    const firstName = testimonialCarouselNamesInTeachPage[0];
+    const secondName = testimonialCarouselNamesInTeachPage[1];
+
+    await this.expectTextContentToContain(
+      testimonialCarouselNameInTeachPage,
+      firstName
+    );
+
+    if (this.isViewportAtMobileWidth()) {
+      await this.clickOnElementWithSelector(testimonialCarouselNextButton);
+    } else {
+      const carouselIndicators = await this.page.$$(
+        testimonialCarouselIndicatorsInTeachPage
+      );
+      await carouselIndicators[1].click();
+    }
+
+    await this.expectTextContentToContain(
+      testimonialCarouselNameInTeachPage,
+      secondName
+    );
+
+    if (this.isViewportAtMobileWidth()) {
+      await this.clickOnElementWithSelector(testimonialCarouselPrevButton);
+    } else {
+      const carouselIndicators = await this.page.$$(
+        testimonialCarouselIndicatorsInTeachPage
+      );
+      await carouselIndicators[0].click();
+    }
+
+    await this.expectTextContentToContain(
+      testimonialCarouselNameInTeachPage,
+      firstName
+    );
+    showMessage('The testimonial carousel in teach page is working correctly.');
   }
 
   /**

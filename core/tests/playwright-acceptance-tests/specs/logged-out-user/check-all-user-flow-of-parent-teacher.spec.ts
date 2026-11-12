@@ -1,4 +1,4 @@
-// Copyright 2024 The Oppia Authors. All Rights Reserved.
+// Copyright 2026 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,39 +16,22 @@
  * @fileoverview Acceptance Test for checking the user flow of Parent/Teachers
  */
 
-/*
-  This is the user-journey of parent/teacher:
-  1.Go to Teach page via footer from the home(splash) page
-  2.Go to the lessons page from teach page by clicking on the explore lessons button.
-  Testing -Can parent/teacher navigate to the teach page from home page and then to the lessons page from the teach page?
- */
-
+import {test} from '@playwright/test';
 import {UserFactory} from '../../utilities/common/user-factory';
 import {LoggedOutUser} from '../../utilities/user/logged-out-user';
 import testConstants from '../../utilities/common/test-constants';
-import {ConsoleReporter} from '../../utilities/common/console-reporter';
 
 const DEFAULT_SPEC_TIMEOUT_MSECS = testConstants.DEFAULT_SPEC_TIMEOUT_MSECS;
 
-ConsoleReporter.setConsoleErrorsToIgnore([
-  /http:\/\/localhost:8181\/access_validation_handler\/can_access_classroom_page\?/,
-  /classroom_url_fragment=math Failed to load resource: the server responded with a status of 404 \(Not Found\)/,
-  /ng:\/\/\/\.\/core\/templates\/services\/contextual\/logger\.service\.ts\?/,
-  /The requested path \/learn\/math is not found\./,
-]);
-
-ConsoleReporter.setConsoleErrorsToIgnore([
-  /http:\/\/localhost:8181\/access_validation_handler\/can_access_classrooms_page Failed to load resource: the server responded with a status of 404 \(Not Found\)/,
-]);
-
-describe('Parent/Teacher', function () {
+test.describe('Parent/Teacher', function () {
   let loggedOutUser: LoggedOutUser;
 
-  beforeAll(async function () {
-    loggedOutUser = await UserFactory.createLoggedOutUser();
-  }, DEFAULT_SPEC_TIMEOUT_MSECS);
+  test.beforeAll(async function ({browser}) {
+    test.setTimeout(DEFAULT_SPEC_TIMEOUT_MSECS);
+    loggedOutUser = await UserFactory.createLoggedOutUser(browser);
+  });
 
-  it(
+  test(
     'should be able to navigate to "For Parent/Teacher page" via footer ' +
       'and click on "Explore Lessons" button',
     async function () {
@@ -77,13 +60,12 @@ describe('Parent/Teacher', function () {
       await loggedOutUser.clickExploreLessonsButtonAtTheBottomInTeachPage();
       // Navigating back.
       await loggedOutUser.navigateToTeachPage();
-      // Navigating to "Andriod page" by clicking on the "Get Android App" button.
+      // Navigating to "Android page" by clicking on the "Get Android App" button.
       await loggedOutUser.clickGetAndroidAppButtonInTeachPage();
-    },
-    DEFAULT_SPEC_TIMEOUT_MSECS
+    }
   );
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await UserFactory.closeAllBrowsers();
   });
 });
