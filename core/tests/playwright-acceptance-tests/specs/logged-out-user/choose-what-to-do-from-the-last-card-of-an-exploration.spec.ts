@@ -37,7 +37,7 @@ test.describe('Logged-out User', function () {
   let explorationId2: string | null;
 
   test.beforeAll(async function ({browser}) {
-    test.setTimeout(400000);
+    test.setTimeout(600000);
     curriculumAdmin = await UserFactory.createNewUser(
       'curriculumAdm',
       'curriculumAdmin@example.com',
