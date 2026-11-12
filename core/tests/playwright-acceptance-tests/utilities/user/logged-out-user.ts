@@ -30,6 +30,11 @@ const baseUrl = testConstants.URLs.BaseURL;
 const classroomsPageUrl = testConstants.URLs.ClassroomsPage;
 const communityLibraryUrl = testConstants.URLs.CommunityLibrary;
 const homeUrl = testConstants.URLs.Home;
+const impactReport2025Url = testConstants.URLs.ImpactReport2025Url;
+const partnershipsUrl = testConstants.URLs.Partnerships;
+const partnershipsFormUrl = testConstants.URLs.PartnershipsForm;
+const partnershipsFormInPortugueseUrl =
+  testConstants.URLs.PartnershipsFormInPortuguese;
 
 const LABEL_FOR_SUBMIT_BUTTON = 'Submit and start contributing';
 const signUpUsernameInputField = 'input.e2e-test-username-input';
@@ -245,6 +250,21 @@ const impactStatsTitleSelector = '.e2e-test-about-oppia-impact-stat-title';
 const impactChartContainerSelector = '.e2e-test-about-impact-chart-container';
 const impactReportButtonInAboutPage =
   '.e2e-test-about-page-impact-report-button';
+const partnerDesktopTabInAboutPage = '.e2e-test-about-page-partner-desktop-tab';
+const partnerMobileTabInAboutPage = '.e2e-test-about-page-partner-mobile-tab';
+const partnerWithUsDesktopButtonInAboutPage =
+  '.e2e-test-about-page-desktop-partner-button';
+const partnerWithUsMobileButtonInAboutPage =
+  '.e2e-test-about-page-mobile-partner-button';
+const partnerLearnMoreDesktopButtonInAboutPage =
+  '.e2e-test-about-page-partner-learn-more-desktop-button';
+const partnerLearnMoreMobileButtonInAboutPage =
+  '.e2e-test-about-page-partner-learn-more-mobile-button';
+const partnerWithUsButtonAtTheTopOfPartnershipsPage =
+  '.e2e-test-partnerships-page-partner-with-us-button-at-the-top';
+const partnerWithUsButtonAtTheBottomOfPartnershipsPage =
+  '.e2e-test-partnerships-page-partner-with-us-button-at-the-bottom';
+const footerAboutLink = 'a.e2e-test-footer-about-link';
 const featuresSectionInAboutPage = '.e2e-test-about-page-features-section';
 const featuresAccordionExpandButtonDesktopInAboutPage =
   '.e2e-test-about-page-features-panel-title-desktop';
@@ -4107,6 +4127,129 @@ export class LoggedOutUser extends BaseUser {
     ) {
       await this.expectElementToBeVisible(blogSuggestedForYouHeadingSelector);
     }
+  }
+
+  /**
+   * Navigates to the About page using the Oppia website footer.
+   */
+  async clickOnAboutLinkInFooter(): Promise<void> {
+    await this.expectElementToBeVisible(footerAboutLink);
+    await this.clickOnElementWithSelector(footerAboutLink);
+    await this.waitForPageToFullyLoad();
+    await expect(this.page).toHaveURL(aboutUrl);
+  }
+
+  /**
+   * Verifies that the "View Impact Report" button in the About page
+   * links to the 2025 Impact Report.
+   */
+  async clickViewReportButtonInAboutPage(): Promise<void> {
+    await this.expectElementToBeVisible(impactReportButtonInAboutPage);
+    await expect(
+      this.page.locator(impactReportButtonInAboutPage)
+    ).toHaveAttribute('href', impactReport2025Url);
+  }
+
+  /**
+   * Selects the Partner tab on the About page and verifies that the
+   * "Partner with us" button links to the Partnerships form.
+   */
+  async clickPartnerWithUsButtonInAboutPage(): Promise<void> {
+    const partnerTab = this.isViewportAtMobileWidth()
+      ? partnerMobileTabInAboutPage
+      : partnerDesktopTabInAboutPage;
+    const partnerWithUsButton = this.isViewportAtMobileWidth()
+      ? partnerWithUsMobileButtonInAboutPage
+      : partnerWithUsDesktopButtonInAboutPage;
+
+    await this.expectElementToBeVisible(partnerTab);
+    await this.clickOnElementWithSelector(partnerTab);
+    await this.expectElementToBeVisible(partnerWithUsButton);
+    await expect(this.page.locator(partnerWithUsButton)).toHaveAttribute(
+      'href',
+      partnershipsFormUrl
+    );
+  }
+
+  /**
+   * Changes the site language to the given language, selects the Partner
+   * tab on the About page, and verifies that the "Partner with us" button
+   * links to the translated Partnerships form.
+   *
+   * @param {string} langCode - Language code (e.g. 'pt-br').
+   */
+  async clickPartnerWithUsButtonInAboutPageInGivenLanguage(
+    langCode: string
+  ): Promise<void> {
+    await this.changeSiteLanguage(langCode);
+    const partnerTab = this.isViewportAtMobileWidth()
+      ? partnerMobileTabInAboutPage
+      : partnerDesktopTabInAboutPage;
+    const partnerWithUsButton = this.isViewportAtMobileWidth()
+      ? partnerWithUsMobileButtonInAboutPage
+      : partnerWithUsDesktopButtonInAboutPage;
+
+    await this.expectElementToBeVisible(partnerTab);
+    await this.clickOnElementWithSelector(partnerTab);
+    await this.expectElementToBeVisible(partnerWithUsButton);
+    await expect(this.page.locator(partnerWithUsButton)).toHaveAttribute(
+      'href',
+      partnershipsFormInPortugueseUrl
+    );
+    await this.changeSiteLanguage('en');
+  }
+
+  /**
+   * Selects the Partner tab on the About page and clicks the "Learn More"
+   * button to navigate to the Partnerships page.
+   */
+  async clickPartnerLearnMoreButtonInAboutPage(): Promise<void> {
+    const partnerTab = this.isViewportAtMobileWidth()
+      ? partnerMobileTabInAboutPage
+      : partnerDesktopTabInAboutPage;
+    const partnerLearnMoreButton = this.isViewportAtMobileWidth()
+      ? partnerLearnMoreMobileButtonInAboutPage
+      : partnerLearnMoreDesktopButtonInAboutPage;
+
+    await this.expectElementToBeVisible(partnerTab);
+    await this.clickOnElementWithSelector(partnerTab);
+    await this.expectElementToBeVisible(partnerLearnMoreButton);
+    await this.clickOnElementWithSelector(partnerLearnMoreButton);
+    await this.waitForPageToFullyLoad();
+    await expect(this.page).toHaveURL(partnershipsUrl);
+  }
+
+  /**
+   * Verifies that the "Partner with us" button at the top of the Partnerships page
+   * links to the Partnerships form.
+   */
+  async clickPartnerWithUsButtonInPartnershipsPage(): Promise<void> {
+    await this.expectElementToBeVisible(
+      partnerWithUsButtonAtTheTopOfPartnershipsPage
+    );
+    await expect(
+      this.page.locator(partnerWithUsButtonAtTheTopOfPartnershipsPage)
+    ).toHaveAttribute('href', partnershipsFormUrl);
+  }
+
+  /**
+   * Changes the site language to the given language and verifies that the
+   * "Partner with us" button at the bottom of the Partnerships page links
+   * to the translated Partnerships form.
+   *
+   * @param {string} langCode - Language code (e.g. 'pt-br').
+   */
+  async clickPartnerWithUsButtonInPartnershipsPageInGivenLanguage(
+    langCode: string
+  ): Promise<void> {
+    await this.changeSiteLanguage(langCode);
+    await this.expectElementToBeVisible(
+      partnerWithUsButtonAtTheBottomOfPartnershipsPage
+    );
+    await expect(
+      this.page.locator(partnerWithUsButtonAtTheBottomOfPartnershipsPage)
+    ).toHaveAttribute('href', partnershipsFormInPortugueseUrl);
+    await this.changeSiteLanguage('en');
   }
 }
 

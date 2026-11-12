@@ -232,8 +232,8 @@
     },
     {
       "name": "logged-out-user/check-all-user-flow-of-partner",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/check-all-user-flow-of-partner.spec.ts",
-      "framework": "puppeteer"
+      "module": "core/tests/playwright-acceptance-tests/specs/logged-out-user/check-all-user-flow-of-partner.spec.ts",
+      "framework": "playwright"
     },
     {
       "name": "logged-out-user/click-all-buttons-on-teach-page",
