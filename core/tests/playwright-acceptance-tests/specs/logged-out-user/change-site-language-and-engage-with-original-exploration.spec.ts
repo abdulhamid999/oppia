@@ -1,4 +1,4 @@
-// Copyright 2024 The Oppia Authors. All Rights Reserved.
+// Copyright 2026 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  * translations, and interacting with an exploration in its original language.
  */
 
+import {test} from '@playwright/test';
 import {UserFactory} from '../../utilities/common/user-factory';
 import testConstants from '../../utilities/common/test-constants';
 import {LoggedOutUser} from '../../utilities/user/logged-out-user';
@@ -35,14 +36,16 @@ enum CARD_NAME {
   FINAL_CARD = 'Final Card',
 }
 
-describe('Logged-out User', function () {
+test.describe('Logged-out User', function () {
   let explorationEditor: ExplorationEditor;
   let loggedOutUser: LoggedOutUser;
 
-  beforeAll(async function () {
+  test.beforeAll(async function ({browser}) {
+    test.setTimeout(DEFAULT_SPEC_TIMEOUT_MSECS);
     explorationEditor = await UserFactory.createNewUser(
       'explorationEditor',
-      'exploration_editor@example.com'
+      'exploration_editor@example.com',
+      browser
     );
 
     await explorationEditor.navigateToCreatorDashboardPage();
@@ -81,44 +84,40 @@ describe('Logged-out User', function () {
       'Algebra'
     );
 
-    loggedOutUser = await UserFactory.createLoggedOutUser();
-  }, DEFAULT_SPEC_TIMEOUT_MSECS);
+    loggedOutUser = await UserFactory.createLoggedOutUser(browser);
+  });
 
-  it(
-    'should be able to change the site language, check translation, navigate through pages, and engage with the exploration in its original language.',
-    async function () {
-      // Changing site language to hindi.
-      await loggedOutUser.changeSiteLanguage('hi');
+  test('should be able to change the site language, check translation, navigate through pages, and engage with the exploration in its original language.', async function () {
+    // Changing site language to hindi.
+    await loggedOutUser.changeSiteLanguage('hi');
 
-      // Check the navbar to confirm that it is translated correctly.
-      await loggedOutUser.expectNavbarButtonsToHaveText([
-        'परिचय',
-        'बुनियादी गणित',
-        'जानिए',
-      ]);
+    // Check the navbar to confirm that it is translated correctly.
+    await loggedOutUser.expectNavbarButtonsToHaveText([
+      'परिचय',
+      'बुनियादी गणित',
+      'जानिए',
+    ]);
 
-      // Confirm that the translation happened correctly.
-      await loggedOutUser.expectPageLanguageToMatch('hi');
+    // Confirm that the translation happened correctly.
+    await loggedOutUser.expectPageLanguageToMatch('hi');
 
-      await loggedOutUser.navigateToCommunityLibraryPage();
-      await loggedOutUser.expectPageLanguageToMatch('hi');
+    await loggedOutUser.navigateToCommunityLibraryPage();
+    await loggedOutUser.expectPageLanguageToMatch('hi');
 
-      await loggedOutUser.playLessonFromSearchResults('Positive Numbers');
-      await loggedOutUser.continueToNextCard();
+    await loggedOutUser.playLessonFromSearchResults('Positive Numbers');
+    await loggedOutUser.continueToNextCard();
 
-      // Check if the content of the card is in the original language (en).
-      await loggedOutUser.expectCardContentToMatch(CONCEPT_CARD_CONTENT_EN);
+    // Check if the content of the card is in the original language (en).
+    await loggedOutUser.expectCardContentToMatch(CONCEPT_CARD_CONTENT_EN);
 
-      await loggedOutUser.continueToNextCard();
-      await loggedOutUser.expectExplorationCompletionToastMessage(
-        'इस पाठ को पूरा करने के लिए बधाई! अब आप अगली बार जब वापस आएंगे तो पाठ को शुरू से ' +
-          'शुरू करेंगे।'
-      );
-    },
-    DEFAULT_SPEC_TIMEOUT_MSECS
-  );
+    await loggedOutUser.continueToNextCard();
+    await loggedOutUser.expectExplorationCompletionToastMessage(
+      'इस पाठ को पूरा करने के लिए बधाई! अब आप अगली बार जब वापस आएंगे तो पाठ को शुरू से ' +
+        'शुरू करेंगे।'
+    );
+  });
 
-  afterAll(async function () {
+  test.afterAll(async function () {
     await UserFactory.closeAllBrowsers();
   });
 });

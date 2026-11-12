@@ -35,6 +35,9 @@ const LABEL_FOR_SUBMIT_BUTTON = 'Submit and start contributing';
 const signUpUsernameInputField = 'input.e2e-test-username-input';
 
 const mobileNavbarButtonSelector = '.text-uppercase';
+const desktopNavbarButtonsSelector = '.oppia-navbar-tab-content';
+const openMobileNavbarMenuButton = '.oppia-navbar-menu-icon';
+const closeMobileNavbarMenuButton = '.oppia-navbar-close-icon';
 const navbarLearnTab = 'a.e2e-test-navbar-learn-menu';
 const languageDropdown = '.e2e-test-language-dropdown';
 const navbarAboutTab = 'a.e2e-test-navbar-about-menu';
@@ -466,15 +469,23 @@ export class LoggedOutUser extends BaseUser {
     if (!languageDropdownElement) {
       throw new Error('Language dropdown element not found');
     }
-    const initialLanguage = await this.page.$eval(
-      languageDropdown,
-      el => el.textContent
-    );
+    const initialLanguage =
+      (await this.page.$eval(languageDropdown, el => el.textContent))?.trim() ??
+      '';
     await this.clickOnElement(languageDropdownElement);
-    // Capture the navigation the language click triggers before reloading.
-    await this.clickAndWaitForNavigation(languageOption, true);
-    // Here we need to reload the page again to confirm the language change.
-    await this.reloadPage();
+
+    // If direction changes (e.g. between RTL and LTR), Oppia automatically reloads the page.
+    // If direction does not change, clicking the language option updates the language in-place.
+    const isDirectionChange =
+      (initialLanguage.includes('العربية') && langCode !== 'ar') ||
+      (!initialLanguage.includes('العربية') && langCode === 'ar');
+
+    if (isDirectionChange) {
+      await this.clickAndWaitForNavigation(languageOption, true);
+    } else {
+      await this.clickOnElementWithSelector(languageOption);
+      await this.reloadPage();
+    }
 
     await this.page.waitForFunction(
       ({selector, textContent}: {selector: string; textContent: string}) => {
@@ -4107,6 +4118,54 @@ export class LoggedOutUser extends BaseUser {
     ) {
       await this.expectElementToBeVisible(blogSuggestedForYouHeadingSelector);
     }
+  }
+
+  /**
+   * Checks if the navbar buttons' text matches any of the expected text.
+   * @param {string[]} expectedText - The expected text for each navbar button.
+   */
+  async expectNavbarButtonsToHaveText(expectedText: string[]): Promise<void> {
+    if (this.isViewportAtMobileWidth()) {
+      await this.expectElementToBeVisible(openMobileNavbarMenuButton);
+      await this.clickOnElementWithSelector(openMobileNavbarMenuButton);
+    }
+
+    const isMobileViewport = this.isViewportAtMobileWidth();
+    const navbarButtonsSelector = isMobileViewport
+      ? mobileNavbarButtonSelector
+      : desktopNavbarButtonsSelector;
+
+    // Get the text content of all navbar buttons.
+    await this.expectElementToBeVisible(navbarButtonsSelector);
+    const navbarButtonsText = await this.page.evaluate(selector => {
+      return Array.from(document.querySelectorAll(selector), element =>
+        (element.textContent || '').trim()
+      );
+    }, navbarButtonsSelector);
+
+    // Check if any of the navbar buttons' text matches the expected text.
+    const isMatchFound = expectedText.some(text =>
+      navbarButtonsText.includes(text)
+    );
+
+    if (this.isViewportAtMobileWidth()) {
+      await this.expectElementToBeVisible(closeMobileNavbarMenuButton);
+      await this.clickOnElementWithSelector(closeMobileNavbarMenuButton);
+    }
+
+    if (!isMatchFound) {
+      throw new Error(
+        `None of the navbar buttons' text matches the expected text: ${expectedText}`
+      );
+    }
+  }
+
+  /**
+   * Advances to the next card in the exploration player.
+   * @param {boolean} skipVerification - Whether to skip verification that next card button is visible.
+   */
+  async continueToNextCard(skipVerification: boolean = false): Promise<void> {
+    await this.continueToNextCardAsLoggedOutUser(skipVerification);
   }
 }
 
