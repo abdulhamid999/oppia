@@ -2107,7 +2107,7 @@ export class ExplorationEditor extends BaseUser {
       showMessage(
         `Switching content type from ${activeContentType} to ${contentType}`
       );
-      await this.clickOnElementWithSelector(contentType);
+      await this.clickOnElementWithText(contentType);
     }
 
     if (contentType === 'Feedback' && feedbackIndex !== undefined) {
