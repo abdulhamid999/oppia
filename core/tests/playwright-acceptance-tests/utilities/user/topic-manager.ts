@@ -63,6 +63,7 @@ const modalDiv = 'div.modal-content';
 const mobileSaveTopicButton =
   'div.navbar-mobile-options .e2e-test-mobile-save-topic-button';
 const mobileOptionsSelector = '.e2e-test-mobile-options-base';
+const navigationContainerSelector = '.e2e-test-mobile-navigation-bar-container';
 const mobileTopicSelector = 'div.e2e-test-mobile-topic-name a';
 const topicsTab = 'a.e2e-test-topics-tab';
 const closeSaveModalButton = '.e2e-test-close-save-modal-button';
@@ -1119,7 +1120,19 @@ export class TopicManager extends BaseUser {
    */
   async publishUpdatedSkill(updateMessage: string): Promise<void> {
     if (this.isViewportAtMobileWidth()) {
-      await this.clickOnElementWithSelector(mobileSkillNavToggle);
+      if (
+        !(await this.isElementVisible(navigationContainerSelector, true, 5000))
+      ) {
+        await this.expectElementToBeVisible(mobileOptionsSelector);
+        await this.clickOnElementWithSelector(mobileOptionsSelector);
+      }
+      const toggles = this.page.locator(mobileSkillNavToggle);
+      if ((await toggles.count()) > 1) {
+        await toggles.nth(1).click();
+      } else {
+        await toggles.first().click();
+      }
+      await this.expectElementToBeVisible(mobileSaveSkillChanges);
       await this.clickOnElementWithSelector(mobileSaveSkillChanges);
     } else {
       await this.clickOnElementWithSelector(saveOrPublishSkillSelector);

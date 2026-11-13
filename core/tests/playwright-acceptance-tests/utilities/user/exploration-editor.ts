@@ -1109,6 +1109,14 @@ export class ExplorationEditor extends BaseUser {
         `Could not find clickable background for card: ${cardName}`
       );
     }
+    // Wait for any ng-star-inserted overlay div to disappear before clicking
+    // the state graph node. After reloadPage(), Angular may render a temporary
+    // overlay that blocks the SVG rect from being clickable.
+    await this.page
+      .waitForSelector('div.ng-star-inserted', {state: 'hidden', timeout: 15000})
+      .catch(() => {
+        // If no such element exists or it doesn't hide in time, proceed anyway.
+      });
     await nodeBackground.evaluate(el =>
       el.scrollIntoView({block: 'center', inline: 'center'})
     );
