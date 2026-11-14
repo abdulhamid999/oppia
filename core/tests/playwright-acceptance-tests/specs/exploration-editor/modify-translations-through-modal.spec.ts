@@ -203,6 +203,7 @@ test.describe('Exploration Editor', function () {
 
   test('should show translations of main content and edit them via the modal.', async function () {
     await explorationEditor.page.bringToFront();
+    await explorationEditor.navigateToEditorTab();
     await explorationEditor.reloadPage();
     await explorationEditor.navigateToCard(CARD_NAME.INTRODUCTION);
     await explorationEditor.navigateToTranslationsTab();

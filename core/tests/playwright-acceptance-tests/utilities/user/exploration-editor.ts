@@ -1109,7 +1109,11 @@ export class ExplorationEditor extends BaseUser {
     await nodeBackground.evaluate(el =>
       el.scrollIntoView({block: 'center', inline: 'center'})
     );
-    await this.clickOnElement(nodeBackground);
+    try {
+      await nodeBackground.click({force: true});
+    } catch {
+      await this.clickOnElement(nodeBackground);
+    }
 
     const headingName = !cardName.trimEnd().endsWith('...')
       ? cardName
