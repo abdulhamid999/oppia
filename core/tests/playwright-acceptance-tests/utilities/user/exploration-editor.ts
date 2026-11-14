@@ -1106,14 +1106,15 @@ export class ExplorationEditor extends BaseUser {
         `Could not find clickable background for card: ${cardName}`
       );
     }
-    await nodeBackground.evaluate(el =>
-      el.scrollIntoView({block: 'center', inline: 'center'})
-    );
-    try {
-      await nodeBackground.click({force: true});
-    } catch {
-      await this.clickOnElement(nodeBackground);
-    }
+    await nodeBackground.evaluate((el: Element) => {
+      el.scrollIntoView({block: 'center', inline: 'center'});
+      if (typeof (el as HTMLElement).click === 'function') {
+        (el as HTMLElement).click();
+      }
+      el.dispatchEvent(
+        new MouseEvent('click', {bubbles: true, cancelable: true})
+      );
+    });
 
     const headingName = !cardName.trimEnd().endsWith('...')
       ? cardName
@@ -1124,7 +1125,8 @@ export class ExplorationEditor extends BaseUser {
           const element = document.querySelector(selector);
           return element?.textContent?.includes(value);
         },
-        {selector: currentCardNameContainerSelector, value: headingName}
+        {selector: currentCardNameContainerSelector, value: headingName},
+        {timeout: 10000}
       );
     } catch (error) {
       if (retry) {
