@@ -1044,6 +1044,43 @@ export class ExplorationEditor extends BaseUser {
   }
 
   /**
+   * Dismisses the lost changes modal or version mismatch modal if present.
+   * @param {number} timeoutMs - Timeout in milliseconds to wait for modal.
+   */
+  async dismissLostChangesModalIfExists(timeoutMs: number = 0): Promise<void> {
+    try {
+      let lostModal = await this.page.$(
+        'oppia-lost-changes-modal, .e2e-test-lost-changes-modal'
+      );
+      if (!lostModal && timeoutMs > 0) {
+        lostModal = await this.page
+          .waitForSelector(
+            'oppia-lost-changes-modal, .e2e-test-lost-changes-modal',
+            {timeout: timeoutMs, state: 'visible'}
+          )
+          .catch(() => null);
+      }
+      if (lostModal) {
+        const closeBtn = await this.page.$(
+          'oppia-lost-changes-modal button.btn-secondary, .e2e-test-discard-lost-changes-button'
+        );
+        if (closeBtn) {
+          await this.clickOnElement(closeBtn);
+          await this.page
+            .waitForSelector('.modal-dialog', {
+              state: 'hidden',
+              timeout: 5000,
+            })
+            .catch(() => {});
+          await this.waitForPageToFullyLoad();
+        }
+      }
+    } catch {
+      // If modal is not present or already closed, proceed.
+    }
+  }
+
+  /**
    * Function to navigate to a specific card in the exploration.
    * @param {string} cardName - The name of the card to navigate to.
    * @param {boolean} retry - Whether to retry navigation if it fails (default: true).
@@ -1109,17 +1146,7 @@ export class ExplorationEditor extends BaseUser {
         `Could not find clickable background for card: ${cardName}`
       );
     }
-    // Wait for any ng-star-inserted overlay div to disappear before clicking
-    // the state graph node. After reloadPage(), Angular may render a temporary
-    // overlay that blocks the SVG rect from being clickable.
-    await this.page
-      .waitForSelector('div.ng-star-inserted', {
-        state: 'hidden',
-        timeout: 15000,
-      })
-      .catch(() => {
-        // If no such element exists or it doesn't hide in time, proceed anyway.
-      });
+    await this.dismissLostChangesModalIfExists();
     await nodeBackground.evaluate((el: Element) => {
       el.scrollIntoView({block: 'center', inline: 'center'});
       if (typeof (el as HTMLElement).click === 'function') {

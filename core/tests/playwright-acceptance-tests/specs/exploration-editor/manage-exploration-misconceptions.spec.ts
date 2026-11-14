@@ -200,6 +200,7 @@ test.describe('Exploration Editor', function () {
     // We reload the page here and elsewhere in order to fetch the curated version of the
     // exploration since it isn't curated by default on initialization.
     await explorationEditor.reloadPage();
+    await explorationEditor.dismissLostChangesModalIfExists(3000);
     await explorationEditor.navigateToCard(CARD_NAME.MULTIPLE_CHOICE_QUESTION);
     await explorationEditor.addSkillToState('Test Skill 1');
     await explorationEditor.verifyMisconceptionPresentForState(
@@ -210,6 +211,7 @@ test.describe('Exploration Editor', function () {
 
   test('should allow user to mark misconceptions as inapplicable.', async function () {
     await explorationEditor.reloadPage();
+    await explorationEditor.dismissLostChangesModalIfExists(3000);
     await explorationEditor.navigateToCard(CARD_NAME.MULTIPLE_CHOICE_QUESTION);
     await explorationEditor.toggleMisconceptionApplicableStatus(
       'Subtraction Misconception'
@@ -229,6 +231,7 @@ test.describe('Exploration Editor', function () {
 
   test('should tag answer group with misconception.', async function () {
     await explorationEditor.reloadPage();
+    await explorationEditor.dismissLostChangesModalIfExists(3000);
     await explorationEditor.navigateToCard(CARD_NAME.MULTIPLE_CHOICE_QUESTION);
     await explorationEditor.tagAnswerGroupWithMisconception(
       1,
@@ -243,6 +246,7 @@ test.describe('Exploration Editor', function () {
 
   test('should change tagged misconception for response group', async function () {
     await explorationEditor.reloadPage();
+    await explorationEditor.dismissLostChangesModalIfExists(3000);
     await explorationEditor.navigateToCard(CARD_NAME.MULTIPLE_CHOICE_QUESTION);
     await explorationEditor.changeTaggedAnswerGroupMisconception(
       1,
@@ -257,6 +261,7 @@ test.describe('Exploration Editor', function () {
 
   test('should not display misconceptions after skill is removed from state.', async function () {
     await explorationEditor.reloadPage();
+    await explorationEditor.dismissLostChangesModalIfExists(3000);
     await explorationEditor.navigateToCard(CARD_NAME.MULTIPLE_CHOICE_QUESTION);
     await explorationEditor.removeSkillFromState();
     await explorationEditor.verifyMisconceptionPresentForState(
