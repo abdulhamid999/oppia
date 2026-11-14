@@ -1113,14 +1113,21 @@ export class ExplorationEditor extends BaseUser {
     // the state graph node. After reloadPage(), Angular may render a temporary
     // overlay that blocks the SVG rect from being clickable.
     await this.page
-      .waitForSelector('div.ng-star-inserted', {state: 'hidden', timeout: 15000})
+      .waitForSelector('div.ng-star-inserted', {
+        state: 'hidden',
+        timeout: 15000,
+      })
       .catch(() => {
         // If no such element exists or it doesn't hide in time, proceed anyway.
       });
     await nodeBackground.evaluate(el =>
       el.scrollIntoView({block: 'center', inline: 'center'})
     );
-    await this.clickOnElement(nodeBackground);
+    try {
+      await nodeBackground.click({force: true});
+    } catch {
+      await this.clickOnElement(nodeBackground);
+    }
 
     const headingName = !cardName.trimEnd().endsWith('...')
       ? cardName
