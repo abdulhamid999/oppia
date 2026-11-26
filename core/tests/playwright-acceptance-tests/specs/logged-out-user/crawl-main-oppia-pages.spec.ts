@@ -89,7 +89,7 @@ test.describe('Search Engine Bot', function () {
       await loggedOutUser.verifySitemapXmlContent();
 
       // Issue an HTTP GET request to the site root directory (oppia.org/).
-      await loggedOutUser.navigateToSplashPage();
+      await loggedOutUser.navigateToSplashPageAsLoggedOutUser();
       await loggedOutUser.verifyCurrentPageStatus200();
       await loggedOutUser.verifySEOMetadata(SPLASH_SEO);
 
